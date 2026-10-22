@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -10,6 +11,10 @@ import {
 } from '../lib/format'
 import { useCity, withCity } from '../lib/city'
 import { AutopilotBadge, ErrorBox, HealthBadge, Loading, Section, StatTile } from '../components/ui'
+import ListingWriter from '../components/ai/ListingWriter'
+import ApplicationReader from '../components/ai/ApplicationReader'
+import RenterChat from '../components/ai/RenterChat'
+import AppInsights from '../components/ai/AppInsights'
 
 const STAGES: { key: StageKey; label: string }[] = [
   { key: 'notice', label: 'Notice' },
@@ -109,6 +114,7 @@ function PricePanel({ id, active }: { id: number; active: boolean }) {
 
 export default function TurnoverPage() {
   const id = Number(useParams().id)
+  const [newAppId, setNewAppId] = useState<number | null>(null)
   const city = useCity()
   const qc = useQueryClient()
   const { data: t, isLoading, error } = useQuery({ queryKey: ['turnover', id], queryFn: () => api.turnover(id) })
@@ -243,10 +249,12 @@ export default function TurnoverPage() {
           </Section>
 
           <Section title="Applications" subtitle="Approve one and the new lease is created automatically.">
+            {!done && <div className="mb-4"><ApplicationReader t={t} onDone={setNewAppId} /></div>}
             {t.applications.length === 0 ? <p className="text-sm text-body">No applications yet.</p> : (
               <ul className="divide-y divide-line">
                 {t.applications.map((a) => (
-                  <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                  <li key={a.id} className={`py-3 text-sm ${a.id === newAppId ? 'rounded-card bg-accent-soft/60 px-3' : ''}`}>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-heading">{a.applicant_name}</p>
                       <p className="text-xs text-body">
@@ -272,11 +280,19 @@ export default function TurnoverPage() {
                         {a.status[0].toUpperCase() + a.status.slice(1)}
                       </span>
                     )}
+                  </div>
+                  {a.ai_summary && <AppInsights a={a} open={a.id === newAppId} />}
                   </li>
                 ))}
               </ul>
             )}
           </Section>
+
+          {!done && (
+            <Section title="Renter messages" subtitle="Instant replies from the AI leasing assistant. Try it as a renter.">
+              <RenterChat t={t} />
+            </Section>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -302,7 +318,12 @@ export default function TurnoverPage() {
                 ))}
               </ul>
             )}
-            <p className="mt-4 flex items-center gap-1.5 text-xs text-muted"><Sparkles size={13} aria-hidden /> AI listing writer arrives in the next phase.</p>
+            {!done && (
+              <div className="mt-4">
+                <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-heading"><Sparkles size={15} aria-hidden className="text-chart" /> AI listing writer</p>
+                <ListingWriter t={t} />
+              </div>
+            )}
           </Section>
 
           <Section title="Unit details">

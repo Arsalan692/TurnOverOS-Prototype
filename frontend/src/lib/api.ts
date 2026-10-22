@@ -106,6 +106,27 @@ export interface Dashboard {
   lead_response: { median_hours: number | null; unanswered_pct: number | null; leads_90d: number }
 }
 
+export interface ListingDraft {
+  title: string; description: string; highlights: string[]; facebook_post: string
+  photo_notes: string[]; fair_housing_check: string
+  model: string | null; photos_used: number; ai: boolean; error?: string
+}
+
+export interface ChatTurn { role: 'renter' | 'assistant'; text: string }
+export interface BotReply {
+  reply: string; intent: string; suggested_slots: string[]
+  needs_human: boolean; handoff_reason: string | null; model: string
+}
+
+export interface ExtractedApp {
+  applicant_name: string | null; current_address: string | null; current_landlord: string | null
+  years_at_current_address: number | null; job_title: string | null
+  employment_length_years: number | null; occupants: number | null; pets: string | null
+  references: { name: string | null; relationship: string | null; phone: string | null }[]
+  signed: boolean | null; missing_fields: string[]; handwriting_or_scan_quality: string
+  strengths: string[]; follow_ups: string[]; model: string; source: string
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, {
     headers: { 'Content-Type': 'application/json' },
@@ -145,4 +166,25 @@ export const api = {
   unit: (id: number) => request<UnitDetail>(`/units/${id}`),
   notice: (unitId: number, body: { notice_date?: string; move_out_date?: string; autopilot: boolean }) =>
     post<NoticeResult>(`/units/${unitId}/notice`, body),
+
+  // AI (Gemini)
+  aiListing: (id: number, tone: string) => post<ListingDraft>(`/turnovers/${id}/ai/listing`, { tone }),
+  applyListing: (id: number, body: { title: string; description: string; facebook_post: string; ai_generated: boolean }) =>
+    post<TurnoverDetail>(`/turnovers/${id}/listings/apply`, body),
+  samples: () => request<string[]>('/samples'),
+  sampleApplication: (id: number, name: string) =>
+    post<{ application_id: number; turnover: TurnoverDetail }>(`/turnovers/${id}/applications/sample/${encodeURIComponent(name)}`, {}),
+  uploadApplication: async (id: number, file: File) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch(`/api/turnovers/${id}/applications/upload`, { method: 'POST', body: fd })
+    if (!res.ok) {
+      let msg = `Upload failed (${res.status})`
+      try { const b = await res.json(); if (typeof b.detail === 'string') msg = b.detail } catch { /* not JSON */ }
+      throw new Error(msg)
+    }
+    return res.json() as Promise<{ application_id: number; turnover: TurnoverDetail }>
+  },
+  aiReply: (id: number, message: string, history: ChatTurn[]) =>
+    post<BotReply>(`/turnovers/${id}/ai/reply`, { message, history }),
 }
