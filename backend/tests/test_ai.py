@@ -96,3 +96,13 @@ def test_showing_slots_are_future_and_four():
     t = SimpleNamespace(move_out_date=today())
     slots = reply_bot.showing_slots(t)
     assert len(slots) == 4
+
+
+def test_ai_endpoints_are_rate_limited(client, monkeypatch):
+    from app.config import settings
+    monkeypatch.setattr(settings, "ai_calls_per_hour", 2)
+    fake = reply_bot.BotReply(reply="ok", intent="question", suggested_slots=[], needs_human=False)
+    monkeypatch.setattr("app.ai_routes.reply_bot.reply", lambda *a, **k: (fake, "fake"))
+    card = active_turnover(client)
+    codes = [client.post(f"/api/turnovers/{card['id']}/ai/reply", json={"message": "hi"}).status_code for _ in range(3)]
+    assert codes == [200, 200, 429]

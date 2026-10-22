@@ -19,6 +19,13 @@ from .stages import Stage
 StageCol = Enum(Stage, name="stage", values_callable=lambda e: [m.value for m in e])
 
 
+class AppMeta(Base):
+    """Small key/value store, e.g. the date the demo data was last seeded."""
+    __tablename__ = "app_meta"
+    key: Mapped[str] = mapped_column(String(50), primary_key=True)
+    value: Mapped[str] = mapped_column(String(200))
+
+
 class Owner(Base):
     __tablename__ = "owners"
     id: Mapped[int] = mapped_column(primary_key=True)

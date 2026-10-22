@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.db import engine, get_db
 from app.main import app
+from app.ratelimit import reset as reset_rate_limit
 
 
 @pytest.fixture
@@ -15,6 +16,7 @@ def client():
     trans = conn.begin()
     session = Session(bind=conn, join_transaction_mode="create_savepoint")
     app.dependency_overrides[get_db] = lambda: session
+    reset_rate_limit()
     try:
         yield TestClient(app)
     finally:

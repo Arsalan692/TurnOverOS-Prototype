@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation, useSearchParams } from 'react-router-dom'
 import { BellPlus, Columns3, LayoutDashboard } from 'lucide-react'
 import { useCity, withCity } from '../lib/city'
+import WakeNotice from './WakeNotice'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -94,6 +95,7 @@ export default function Layout() {
       </aside>
 
       <div className="min-w-0 md:ml-60">
+        <WakeNotice />
         <header className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-line bg-surface px-4 py-2 md:px-8">
           <p className="font-label text-[14px] uppercase tracking-[0.12em] text-muted">
             KO Realty · Calgary &amp; Edmonton

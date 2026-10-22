@@ -17,13 +17,14 @@ from sqlalchemy import text
 
 from .db import SessionLocal
 from .models import (
-    Application, Lead, Lease, Listing, Owner, Property, StageEvent, Task, Tenant,
+    AppMeta, Application, Lead, Lease, Listing, Owner, Property, StageEvent, Task, Tenant,
     Turnover, Unit, Vendor,
 )
+from .services.common import today as alberta_today
 from .stages import STAGE_INFO, Stage
 
 SEED = 42
-TODAY = date.today()
+TODAY = alberta_today()
 random.seed(SEED)
 fake = Faker("en_CA")
 Faker.seed(SEED)
@@ -444,6 +445,7 @@ def seed():
         for unit in units[i:]:
             occupied_lease(b, unit)
 
+        db.merge(AppMeta(key="seeded_on", value=TODAY.isoformat()))
         db.commit()
         print_summary(db)
     finally:

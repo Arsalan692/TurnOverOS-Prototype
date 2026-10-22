@@ -1,0 +1,24 @@
+# Render Blueprint: backend API (free plan).
+# Secrets (DATABASE_URL, GEMINI_API_KEY) are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: turnoveros-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    # Migrate, refresh demo data if it is from an earlier day, then serve
+    startCommand: cd backend && alembic upgrade head && python -m app.startup && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips "*"
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODELS
+        value: gemini-3.5-flash,gemini-2.5-flash
+      - key: CORS_ORIGINS
+        value: http://localhost:5173

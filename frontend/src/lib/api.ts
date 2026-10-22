@@ -127,8 +127,11 @@ export interface ExtractedApp {
   strengths: string[]; follow_ups: string[]; model: string; source: string
 }
 
+// Production: full backend URL from VITE_API_URL. Dev: same origin, proxied by Vite.
+const API = `${(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')}/api`
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${API}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...init,
   })
@@ -177,7 +180,7 @@ export const api = {
   uploadApplication: async (id: number, file: File) => {
     const fd = new FormData()
     fd.append('file', file)
-    const res = await fetch(`/api/turnovers/${id}/applications/upload`, { method: 'POST', body: fd })
+    const res = await fetch(`${API}/turnovers/${id}/applications/upload`, { method: 'POST', body: fd })
     if (!res.ok) {
       let msg = `Upload failed (${res.status})`
       try { const b = await res.json(); if (typeof b.detail === 'string') msg = b.detail } catch { /* not JSON */ }

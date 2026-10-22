@@ -15,6 +15,7 @@ from .ai.client import AIUnavailable
 from .config import settings
 from .db import get_db
 from .models import Application
+from .ratelimit import limit_ai
 from .routers import get_turnover
 from .serializers import turnover_detail
 from .services.common import today
@@ -46,7 +47,7 @@ class ListingRequest(BaseModel):
     tone: str = Field("warm", max_length=40)
 
 
-@router.post("/turnovers/{turnover_id}/ai/listing")
+@router.post("/turnovers/{turnover_id}/ai/listing", dependencies=[Depends(limit_ai)])
 def ai_listing_draft(turnover_id: int, body: ListingRequest, db: Session = Depends(get_db)):
     """Draft a Rentfaster ad and Facebook post from the unit facts and photos."""
     t = _active(db, turnover_id)
@@ -115,7 +116,7 @@ def _screen(db: Session, turnover_id: int, data: bytes, mime: str, source: str):
     return {"application_id": app.id, "turnover": turnover_detail(get_turnover(db, turnover_id))}
 
 
-@router.post("/turnovers/{turnover_id}/applications/upload")
+@router.post("/turnovers/{turnover_id}/applications/upload", dependencies=[Depends(limit_ai)])
 async def upload_application(turnover_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     """Upload a rental application (PDF, photo or scan); Gemini reads it."""
     mime = file.content_type or mimetypes.guess_type(file.filename or "")[0] or ""
@@ -132,7 +133,7 @@ def list_samples():
     return sorted(p.name for p in SAMPLES.glob("*") if p.suffix in (".pdf", ".jpg", ".png"))
 
 
-@router.post("/turnovers/{turnover_id}/applications/sample/{name}")
+@router.post("/turnovers/{turnover_id}/applications/sample/{name}", dependencies=[Depends(limit_ai)])
 def sample_application(turnover_id: int, name: str, db: Session = Depends(get_db)):
     """Run the reader on one of the bundled sample applications."""
     path = (SAMPLES / name).resolve()
@@ -149,7 +150,7 @@ class ReplyRequest(BaseModel):
     history: list[reply_bot.ChatTurn] = Field(default_factory=list, max_length=20)
 
 
-@router.post("/turnovers/{turnover_id}/ai/reply")
+@router.post("/turnovers/{turnover_id}/ai/reply", dependencies=[Depends(limit_ai)])
 def ai_reply(turnover_id: int, body: ReplyRequest, db: Session = Depends(get_db)):
     """Instant answer to a renter's message about this listing."""
     t = _active(db, turnover_id)

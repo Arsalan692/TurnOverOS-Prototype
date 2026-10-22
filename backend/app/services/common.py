@@ -1,14 +1,18 @@
 """Small helpers shared by the services."""
 
 import calendar
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from ..models import Turnover, Unit
 from ..stages import STAGE_INFO, STAGE_ORDER, VACANT_STAGES, Stage
 
+ALBERTA = ZoneInfo("America/Edmonton")
+
 
 def today() -> date:
-    return date.today()
+    """Today's date in Alberta (servers run on UTC)."""
+    return datetime.now(ALBERTA).date()
 
 
 def daily_rent(monthly: float | int | None) -> float:
