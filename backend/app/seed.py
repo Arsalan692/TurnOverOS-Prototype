@@ -111,6 +111,7 @@ def make_portfolio(db):
     db.flush()
 
     units: list[Unit] = []
+    used_names: set[str] = set()
     for city, target in TARGET_UNITS.items():
         count = 0
         while count < target:
@@ -122,6 +123,12 @@ def make_portfolio(db):
             street = f"{r(1, 90)} {random.choice(['Ave', 'St'])} {quad}"
             name = {"apartment": f"The {fake.last_name()}", "condo": f"{hood} Condos",
                     "townhouse": f"{hood} Townhomes", "house": f"{street_no} {street}"}[ptype]
+            # Keep building names unique so cards are never confused
+            base, n = name, 2
+            while name in used_names:
+                name = f"{base} {['', '', 'II', 'III', 'IV', 'V', 'VI'][n] if n < 7 else n}"
+                n += 1
+            used_names.add(name)
             prop = Property(
                 owner=random.choice(owners), name=name, city=city, neighbourhood=hood,
                 address=f"{street_no} {street}, {city}, AB", property_type=ptype,

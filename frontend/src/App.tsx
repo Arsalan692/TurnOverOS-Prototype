@@ -1,25 +1,29 @@
-import { useEffect, useState } from 'react'
+import { Link, Route, Routes } from 'react-router-dom'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+import Board from './pages/Board'
+import TurnoverPage from './pages/TurnoverPage'
+import LogNotice from './pages/LogNotice'
+
+function NotFound() {
+  return (
+    <div className="card mx-auto max-w-md p-8 text-center">
+      <h1 className="text-2xl">Page not found</h1>
+      <Link to="/" className="btn mt-6">Back to dashboard</Link>
+    </div>
+  )
+}
 
 export default function App() {
-  const [health, setHealth] = useState<string>('checking...')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((r) => r.json())
-      .then((d) => setHealth(`${d.status} · database ${d.database}`))
-      .catch(() => setHealth('backend not reachable'))
-  }, [])
-
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="card p-8 text-center max-w-md w-full">
-        <h1 className="section-title inline-block text-3xl">TurnoverOS</h1>
-        <p className="mt-4">Backend: {health}</p>
-        <div className="mt-6 flex justify-center gap-3">
-          <button className="btn">Outline button</button>
-          <button className="btn-solid">Solid button</button>
-        </div>
-      </div>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="board" element={<Board />} />
+        <Route path="turnovers/:id" element={<TurnoverPage />} />
+        <Route path="notice" element={<LogNotice />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   )
 }

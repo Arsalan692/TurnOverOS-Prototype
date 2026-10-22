@@ -125,6 +125,7 @@ def log_notice(db: Session, unit: Unit, notice_date: date | None, move_out: date
     post_listings(db, t, notice_date, available)
     actions.append({"when": notice_date,
                     "action": f"Listed on Rentfaster and Facebook at ${asking}, available {available:%b %d}."})
+    actions.sort(key=lambda a: a["when"])  # stable: same-day steps keep their order
     return t, actions
 
 

@@ -10,6 +10,7 @@
   --color-accent: #48c7ec;        /* primary brand colour */
   --color-accent-dark: #22a9d1;   /* hover / pressed */
   --color-accent-soft: #e8f7fc;   /* tinted backgrounds */
+  --color-chart: #1594bb;         /* chart marks: accent darkened to pass 3:1 on white */
   --color-navy: #092a48;          /* headings, top bar */
   --color-navy-deep: #0d1d36;     /* sidebar / footer */
   --color-navy-darkest: #031633;
@@ -36,6 +37,7 @@
 }
 
 @layer base {
+  :root { color-scheme: only light; }
   body {
     @apply bg-canvas text-body font-sans antialiased;
   }
@@ -64,12 +66,13 @@
 
   /* Solid variant for primary actions */
   .btn-solid {
-    @apply inline-flex items-center gap-2 rounded-pill bg-accent px-5 py-2 text-sm font-semibold text-white
-      transition-colors duration-300 hover:bg-accent-dark;
+    /* deeper than --accent so white text stays readable */
+    @apply inline-flex items-center gap-2 rounded-pill bg-chart px-5 py-2 text-sm font-semibold text-white
+      transition-colors duration-300 hover:bg-[#0f7898] disabled:opacity-60;
   }
 
   .card {
-    @apply rounded-card bg-surface shadow-card transition-shadow duration-300;
+    @apply relative rounded-card bg-surface shadow-card transition-shadow duration-300;
   }
   .card:hover { @apply shadow-card-hover; }
 
