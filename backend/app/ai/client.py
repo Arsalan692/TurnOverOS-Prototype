@@ -42,8 +42,12 @@ def _client() -> genai.Client:
     )
 
 
-def _models() -> list[str]:
-    return [m.strip() for m in settings.gemini_models.split(",") if m.strip()]
+def _models(prefer_fast: bool = False) -> list[str]:
+    models = [m.strip() for m in settings.gemini_models.split(",") if m.strip()]
+    if prefer_fast:
+        # Chat must feel instant: try the non-thinking 2.5 model first
+        models.sort(key=lambda m: not m.startswith("gemini-2.5-flash"))
+    return models
 
 
 def _thinking(model: str) -> types.ThinkingConfig:
@@ -58,13 +62,13 @@ def image_part(data: bytes, mime: str) -> types.Part:
 
 
 def generate(schema: type[T], prompt: str, *, system: str, parts: list | None = None,
-             temperature: float = 0.4) -> tuple[T, str]:
+             temperature: float = 0.4, prefer_fast: bool = False) -> tuple[T, str]:
     """Run one structured Gemini call. Returns (parsed result, model used)."""
     client = _client()
     contents = [*(parts or []), prompt]
     last_error: Exception | None = None
 
-    for model in _models():
+    for model in _models(prefer_fast):
         for attempt in range(CONNECT_RETRIES):
             try:
                 resp = client.models.generate_content(

@@ -64,4 +64,4 @@ def reply(t: Turnover, message: str, history: list[ChatTurn]) -> tuple[BotReply,
         f"CONVERSATION SO FAR:\n{transcript or '(none)'}\n\n"
         f"NEW RENTER MESSAGE:\n<<<{message}>>>\n\nWrite the reply."
     )
-    return generate(BotReply, prompt, system=SYSTEM, temperature=0.3)
+    return generate(BotReply, prompt, system=SYSTEM, temperature=0.3, prefer_fast=True)
