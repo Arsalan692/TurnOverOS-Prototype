@@ -14,14 +14,16 @@ from .db import Base, engine
 
 LOCK_ID = 7_310_042
 RECHECK_SECONDS = 3600
-_last_check = 0.0
+_last_check: float | None = None  # None = never checked in this process
 
 
 def ensure_ready(force: bool = False) -> None:
     global _last_check
     if not settings.auto_seed:
         return
-    if not force and time.monotonic() - _last_check < RECHECK_SECONDS:
+    # monotonic() counts from machine start, which on serverless can be seconds ago,
+    # so "never checked" must be explicit rather than 0.0
+    if not force and _last_check is not None and time.monotonic() - _last_check < RECHECK_SECONDS:
         return
     from . import models  # noqa: F401  (register tables)
     from .startup import needs_seed
