@@ -20,7 +20,7 @@ from .models import (
     Application, Lead, Lease, Listing, Owner, Property, StageEvent, Task, Tenant,
     Turnover, Unit, Vendor,
 )
-from .stages import Stage
+from .stages import STAGE_INFO, Stage
 
 SEED = 42
 TODAY = date.today()
@@ -401,7 +401,7 @@ def seed():
                     path = stage_path(False, False, TODAY, ratio, unit.property.city)
                     stages = [s for s, _ in path]
                 idx = stages.index(stage)
-                target = path[idx][1]
+                target = STAGE_INFO[stage]["target_days"]
                 # how long it has been in the current stage (some are stuck)
                 stuck = random.random() < 0.35
                 elapsed = r(target + 2, target * 2 + 6) if stuck else r(0, max(0, target - 1))

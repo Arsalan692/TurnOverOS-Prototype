@@ -25,3 +25,12 @@ cp .env.example .env
 cd ../frontend
 npm install && npm run dev                # http://localhost:5173
 ```
+
+API docs: http://localhost:8000/docs
+
+## Tests
+```bash
+cd backend
+.venv/Scripts/pip install -r requirements-dev.txt
+.venv/Scripts/python -m pytest -q         # runs inside a rolled-back transaction
+```

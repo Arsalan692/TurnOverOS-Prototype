@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from .config import settings
 from .db import engine
+from .routers import router
 
 app = FastAPI(title="TurnoverOS API", version="0.1.0")
 
@@ -13,6 +14,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+app.include_router(router)
 
 
 @app.get("/api/health")
