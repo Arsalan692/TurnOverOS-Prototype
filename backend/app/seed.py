@@ -385,6 +385,10 @@ COMPLETED_TURNOVERS = 330
 
 
 def seed():
+    global TODAY
+    TODAY = alberta_today()  # a long-running process may seed again on a later day
+    random.seed(SEED)
+    Faker.seed(SEED)
     db = SessionLocal()
     try:
         db.execute(text(

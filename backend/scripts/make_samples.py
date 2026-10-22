@@ -2,7 +2,7 @@
 
     python scripts/make_samples.py
 
-Writes to frontend/public/samples/:
+Writes to backend/assets/samples/ (read by the API) and copies to frontend/public/samples/:
   - application-typed.pdf      clean, typed form (complete)
   - application-scanned.jpg    the same kind of form, "scanned": tilted, grey, noisy,
                                handwriting-style font, with a couple of blanks
@@ -15,8 +15,11 @@ from pathlib import Path
 from fpdf import FPDF
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-OUT = Path(__file__).resolve().parents[2] / "frontend" / "public" / "samples"
-OUT.mkdir(parents=True, exist_ok=True)
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "backend" / "assets" / "samples"          # read by the API
+PUBLIC = ROOT / "frontend" / "public" / "samples"     # "view" links in the app
+for d in (OUT, PUBLIC):
+    d.mkdir(parents=True, exist_ok=True)
 
 TYPED = {
     "Full name": "Priya Raman",
@@ -117,5 +120,7 @@ def scanned_jpg(path: Path):
 if __name__ == "__main__":
     typed_pdf(OUT / "application-typed.pdf")
     scanned_jpg(OUT / "application-scanned.jpg")
+    import shutil
     for p in sorted(OUT.iterdir()):
+        shutil.copy(p, PUBLIC / p.name)
         print(p.name, p.stat().st_size // 1024, "KB")

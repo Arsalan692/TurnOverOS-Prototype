@@ -23,7 +23,7 @@ from .services.workflow import post_listings
 
 router = APIRouter(prefix="/api", tags=["ai"])
 
-SAMPLES = Path(__file__).resolve().parents[2] / "frontend" / "public" / "samples"
+SAMPLES = Path(__file__).resolve().parents[1] / "assets" / "samples"
 ALLOWED = {"application/pdf", "image/jpeg", "image/png", "image/webp"}
 MAX_BYTES = 10 * 1024 * 1024
 

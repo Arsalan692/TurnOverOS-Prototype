@@ -9,7 +9,8 @@ from ..models import Turnover
 from ..services.common import today
 from .client import generate, image_part
 
-IMAGES = Path(__file__).resolve().parents[3] / "frontend" / "public" / "images"
+# Bundled with the backend so it works when deployed on its own
+IMAGES = Path(__file__).resolve().parents[2] / "assets" / "images"
 INTERIORS = ["unit-living.jpg", "unit-kitchen.jpg", "unit-bedroom.jpg", "unit-bathroom.jpg"]
 
 SYSTEM = """You write rental listings for a property management company in Alberta, Canada.

@@ -5,9 +5,13 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.db import engine, get_db
 from app.main import app
 from app.ratelimit import reset as reset_rate_limit
+
+
+settings.auto_seed = False  # tests use the already-seeded dev database
 
 
 @pytest.fixture

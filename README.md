@@ -51,3 +51,14 @@ cd backend
 ```
 
 Sample applications for the reader: `python scripts/make_samples.py` (writes to `frontend/public/samples/`).
+
+## Deploy (free, no card)
+Two Vercel projects from this repo, plus a Neon Postgres database:
+
+| Project | Root directory | Environment variables |
+|---|---|---|
+| API | `backend` | `DATABASE_URL` (Neon), `GEMINI_API_KEY`, `GEMINI_MODELS` |
+| Web | `frontend` | `VITE_API_URL` = the API project's URL |
+
+The API creates its tables and loads fresh demo data on the first request of each day
+(Postgres advisory lock prevents double seeding). AI endpoints are limited per visitor.

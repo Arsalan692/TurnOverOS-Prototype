@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     cors_origin_regex: str = r"https://[a-z0-9-]+\.vercel\.app"
     # Public demo: cap AI calls per visitor so the Gemini quota is not drained
     ai_calls_per_hour: int = 40
+    # Create tables and refresh demo data on first request (needed on serverless hosts)
+    auto_seed: bool = True
 
     model_config = SettingsConfigDict(env_file=".env")
 

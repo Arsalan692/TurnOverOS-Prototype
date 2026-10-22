@@ -1,9 +1,11 @@
 import truststore
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy import text
 
 from .ai_routes import router as ai_router
+from .bootstrap import ensure_ready
 from .config import settings
 from .db import engine
 from .routers import router
@@ -20,6 +22,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def ready_data(request, call_next):
+    """First API call of a server process: make sure tables and today's demo data exist."""
+    if request.url.path.startswith("/api") and request.method != "OPTIONS":
+        await run_in_threadpool(ensure_ready)
+    return await call_next(request)
 
 
 app.include_router(router)
