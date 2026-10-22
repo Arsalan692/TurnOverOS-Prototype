@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useTitle } from '../lib/title'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, CalendarDays, CheckCircle2, Search, Zap } from 'lucide-react'
 import { api, type NoticeResult, type UnitRow } from '../lib/api'
 import { beds, days, money, shortDate, todayISO } from '../lib/format'
-import { ErrorBox, Loading, PageHeader, Section } from '../components/ui'
+import { ErrorBox, InlineLoading, PageHeader, Section } from '../components/ui'
 
 function useDebounced<T>(value: T, ms = 250) {
   const [v, setV] = useState(value)
@@ -29,15 +30,15 @@ function UnitPicker({ onPick }: { onPick: (u: UnitRow) => void }) {
         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
         <input
           value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. Beltline, Oliver, 304…"
-          className="w-full rounded-pill border border-line bg-surface py-2.5 pl-10 pr-4 text-sm text-heading outline-none focus:border-accent"
+          className="input py-2.5! pl-10!"
         />
       </label>
-      {isLoading ? <Loading /> : (
+      {isLoading ? <InlineLoading label="Searching units" /> : (
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">
           {data?.map((u) => (
             <li key={u.id}>
               <button type="button" onClick={() => onPick(u)}
-                      className="card w-full p-3 text-left transition-colors hover:bg-accent-soft">
+                      className="card w-full p-3 text-left transition-colors hover:border-gold-deep hover:bg-gold-soft">
                 <p className="text-sm font-semibold text-navy">{u.label}</p>
                 <p className="text-xs text-body">{u.neighbourhood}, {u.city} · {beds(u.bedrooms)} · {money(u.current_rent)}/mo</p>
                 <p className="mt-1 text-xs text-muted">Tenant: {u.tenant}</p>
@@ -63,14 +64,14 @@ function Result({ r, onReset }: { r: NoticeResult; onReset: () => void }) {
             {t.autopilot ? <><Zap size={16} aria-hidden /> Autopilot plan</> : <><CheckCircle2 size={16} aria-hidden /> Notice logged</>}
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-white">{t.unit.label}</h2>
-          <p className="text-[#d5dbe4]">Tenant moves out {shortDate(t.move_out_date)}. {t.autopilot
+          <p className="text-[#e6e1f0]">Tenant moves out {shortDate(t.move_out_date)}. {t.autopilot
             ? `${r.actions.length - 1} steps planned in one click.`
             : 'Nothing else happens until someone acts.'}</p>
         </div>
         <ol className="relative space-y-4 p-6 before:absolute before:inset-y-8 before:left-[2.05rem] before:w-0.5 before:bg-line">
           {r.actions.map((a, i) => (
             <li key={i} className="relative flex gap-4">
-              <span className="z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-white">
+              <span className="z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gold text-ink">
                 <CheckCircle2 size={14} aria-hidden />
               </span>
               <div>
@@ -109,6 +110,7 @@ function Result({ r, onReset }: { r: NoticeResult; onReset: () => void }) {
 }
 
 export default function LogNotice() {
+  useTitle('Log a notice')
   const qc = useQueryClient()
   const [unit, setUnit] = useState<UnitRow | null>(null)
   const [noticeDate, setNoticeDate] = useState(todayISO())
@@ -134,13 +136,14 @@ export default function LogNotice() {
   return (
     <div className="mx-auto max-w-4xl">
       <PageHeader
+        eyebrow="Notice Autopilot"
         title="Log a notice"
         subtitle="A tenant told you they are leaving. With Autopilot, the whole turnover is planned right now, so the next tenant can be found before this one moves out."
       />
 
       {result ? <Result r={result} onReset={reset} /> : !unit ? <UnitPicker onPick={setUnit} /> : (
         <Section title="2. Notice details"
-                 action={<button type="button" className="text-sm font-medium text-[#0f7898] hover:underline" onClick={() => setUnit(null)}>Change unit</button>}>
+                 action={<button type="button" className="text-sm font-medium text-gold-ink hover:underline" onClick={() => setUnit(null)}>Change unit</button>}>
           <div className="mb-5 rounded-card bg-canvas p-4">
             <p className="font-semibold text-navy">{unit.label}</p>
             <p className="text-sm text-body">{unit.address} · {beds(unit.bedrooms)} · {money(unit.current_rent)}/mo · Tenant: {unit.tenant}</p>
@@ -161,9 +164,9 @@ export default function LogNotice() {
           </div>
 
           <label className={`mt-5 flex cursor-pointer items-start gap-3 rounded-card border-2 p-4 transition-colors ${
-            autopilot ? 'border-accent bg-accent-soft' : 'border-line'}`}>
+            autopilot ? 'border-gold-deep bg-gold-soft' : 'border-line'}`}>
             <input type="checkbox" checked={autopilot} onChange={(e) => setAutopilot(e.target.checked)}
-                   className="mt-1 h-4 w-4 accent-[#1594bb]" />
+                   className="mt-1 h-4 w-4 accent-[#8a6116]" />
             <span>
               <span className="flex items-center gap-1.5 font-semibold text-navy"><Zap size={16} aria-hidden /> Notice Autopilot</span>
               <span className="mt-1 block text-sm text-body">

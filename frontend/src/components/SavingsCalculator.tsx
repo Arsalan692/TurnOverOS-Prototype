@@ -62,7 +62,7 @@ export default function SavingsCalculator({ d }: { d: Dashboard }) {
                 <input
                   id={`cut-${s.stage}`} type="range" min={0} max={maxCut} step={0.5} value={v}
                   onChange={(e) => setCuts((c) => ({ ...c, [s.stage]: Number(e.target.value) }))}
-                  className="mt-1 w-full accent-[#1594bb]"
+                  className="mt-1 w-full accent-[#8a6116]"
                   aria-valuetext={`cut ${v} days`}
                 />
               </li>
@@ -72,16 +72,16 @@ export default function SavingsCalculator({ d }: { d: Dashboard }) {
       </div>
 
       <div className="rounded-card bg-navy-deep p-6 text-white">
-        <p className="text-xs uppercase tracking-wide text-[#b7becd]">Owners keep per year</p>
+        <p className="text-xs uppercase tracking-wide text-[#c8c4dc]">Owners keep per year</p>
         <p className="mt-2 text-4xl font-semibold tabular-nums text-accent">{compactMoney(Math.round(saved))}</p>
         <dl className="mt-6 space-y-3 text-sm">
-          <div className="flex justify-between gap-4"><dt className="text-[#b7becd]">Days cut per turnover</dt><dd className="font-semibold tabular-nums">{totalCut.toFixed(1)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-[#b7becd]">Avg days vacant</dt><dd className="font-semibold tabular-nums">{current.toFixed(1)} → {Math.max(0, current - totalCut).toFixed(1)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-[#b7becd]">Turnovers per year</dt><dd className="font-semibold tabular-nums">{turnovers}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-[#b7becd]">Avg rent per day</dt><dd className="font-semibold tabular-nums">{money(daily)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-[#b7becd]">Rent days recovered</dt><dd className="font-semibold tabular-nums">{Math.round(totalCut * turnovers).toLocaleString()}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-[#c8c4dc]">Days cut per turnover</dt><dd className="font-semibold tabular-nums">{totalCut.toFixed(1)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-[#c8c4dc]">Avg days vacant</dt><dd className="font-semibold tabular-nums">{current.toFixed(1)} → {Math.max(0, current - totalCut).toFixed(1)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-[#c8c4dc]">Turnovers per year</dt><dd className="font-semibold tabular-nums">{turnovers}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-[#c8c4dc]">Avg rent per day</dt><dd className="font-semibold tabular-nums">{money(daily)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-[#c8c4dc]">Rent days recovered</dt><dd className="font-semibold tabular-nums">{Math.round(totalCut * turnovers).toLocaleString()}</dd></div>
         </dl>
-        <p className="mt-6 text-xs leading-relaxed text-[#8c96a8]">
+        <p className="mt-6 text-xs leading-relaxed text-[#9a93b8]">
           Days cut × turnovers per year × average daily rent. Based on the last 12 months of demo data.
         </p>
       </div>

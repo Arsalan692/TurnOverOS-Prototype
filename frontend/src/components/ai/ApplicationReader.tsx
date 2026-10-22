@@ -34,15 +34,15 @@ export default function ApplicationReader({ t, onDone }: { t: TurnoverDetail; on
   const onFiles = (files: FileList | null) => { if (files?.[0]) run.mutate({ file: files[0] }) }
 
   return (
-    <div className="rounded-card border border-accent/40 bg-accent-soft/50 p-4">
+    <div className="rounded-card border border-gold-deep/40 bg-gold-soft/60 p-4">
       <div
         onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
         onDragLeave={() => setDrag(false)}
         onDrop={(e) => { e.preventDefault(); setDrag(false); onFiles(e.dataTransfer.files) }}
         className={`flex flex-col items-center justify-center gap-2 rounded-card border-2 border-dashed px-4 py-6 text-center transition-colors ${
-          drag ? 'border-accent bg-white' : 'border-line bg-surface'}`}
+          drag ? 'border-gold-deep bg-white' : 'border-line-strong bg-surface'}`}
       >
-        <ScanLine className="text-chart" aria-hidden />
+        <ScanLine className="text-gold-deep" aria-hidden />
         <p className="text-sm text-heading">
           {run.isPending ? 'Gemini is reading the application…' : 'Drop a rental application here: PDF, photo or scan, even handwritten'}
         </p>
@@ -60,7 +60,7 @@ export default function ApplicationReader({ t, onDone }: { t: TurnoverDetail; on
               <button type="button" className="btn px-3! py-1!" disabled={run.isPending} onClick={() => run.mutate({ sample: s })}>
                 <FileText size={14} aria-hidden /> {SAMPLE_LABELS[s] ?? s}
               </button>
-              <a href={`/samples/${s}`} target="_blank" rel="noreferrer" className="text-xs text-[#0f7898] hover:underline">view</a>
+              <a href={`/samples/${s}`} target="_blank" rel="noreferrer" className="text-xs text-gold-ink hover:underline">view</a>
             </span>
           ))}
         </div>

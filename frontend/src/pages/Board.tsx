@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTitle } from '../lib/title'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -33,7 +34,7 @@ function CardBody({ c }: { c: Card }) {
       </div>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
         {vacant ? (
-          <span className="inline-flex items-center gap-1 font-medium text-[#b4252a] tabular-nums">
+          <span className="inline-flex items-center gap-1 font-medium text-late tabular-nums">
             <DollarSign size={13} aria-hidden />{money(c.rent_lost)} lost · {c.days_vacant}d empty
           </span>
         ) : (
@@ -77,8 +78,8 @@ function Column({ col, city, dropAllowed }: {
   return (
     <div
       ref={setNodeRef}
-      className={`flex w-72 shrink-0 flex-col rounded-card bg-[#eaeff4] transition-colors ${
-        isOver && dropAllowed ? 'bg-accent-soft ring-2 ring-accent' : ''} ${
+      className={`flex w-72 shrink-0 flex-col rounded-card bg-[#f3eee2] transition-colors ${
+        isOver && dropAllowed ? 'bg-gold-soft ring-2 ring-gold-deep' : ''} ${
         dropAllowed === false ? 'opacity-50' : ''}`}
     >
       <div className="flex items-center justify-between px-3 pt-3 pb-2">
@@ -87,8 +88,8 @@ function Column({ col, city, dropAllowed }: {
           <p className="text-xs text-muted">Target {col.target_days}d</p>
         </div>
         <div className="flex items-center gap-1.5">
-          {late > 0 && <span className="rounded-pill bg-late/10 px-2 py-0.5 text-xs font-medium text-[#b4252a]">{late} late</span>}
-          <span className="rounded-pill bg-white px-2 py-0.5 text-xs font-semibold text-navy">{col.cards.length}</span>
+          {late > 0 && <span className="rounded-btn bg-late/10 px-2 py-0.5 text-xs font-medium text-late">{late} late</span>}
+          <span className="rounded-btn bg-white px-2 py-0.5 text-xs font-semibold text-navy">{col.cards.length}</span>
         </div>
       </div>
       <div className="flex max-h-[calc(100vh-17rem)] min-h-24 flex-col gap-2 overflow-y-auto px-2 pb-3">
@@ -100,6 +101,7 @@ function Column({ col, city, dropAllowed }: {
 }
 
 export default function Board() {
+  useTitle('Turnover board')
   const city = useCity()
   const qc = useQueryClient()
   const { data, isLoading, error } = useQuery({ queryKey: ['board', city], queryFn: () => api.board(city) })
@@ -141,17 +143,24 @@ export default function Board() {
   return (
     <div>
       <PageHeader
+        eyebrow="Operations"
         title="Turnover board"
         subtitle="Every unit between tenants, from notice to move-in. Drag a card forward when a step is done; red cards are past their target."
         action={<Link to="/notice" className="btn-solid">Log a notice</Link>}
       />
 
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
-        <span className="rounded-pill bg-surface px-3 py-1 shadow-card"><b className="text-navy">{s.active}</b> in progress</span>
-        <span className="rounded-pill bg-surface px-3 py-1 shadow-card"><b className="text-navy">{s.vacant}</b> empty now</span>
-        <span className="rounded-pill bg-late/10 px-3 py-1 text-[#b4252a]"><b>{s.late}</b> late</span>
-        <span className="rounded-pill bg-warn/15 px-3 py-1 text-[#94600f]"><b>{s.warn}</b> at risk</span>
-        <span className="rounded-pill bg-surface px-3 py-1 shadow-card"><b className="text-navy">{money(s.rent_lost_so_far)}</b> rent lost so far</span>
+        {[
+          { v: s.active, l: 'in progress', c: 'text-ink' },
+          { v: s.vacant, l: 'empty now', c: 'text-ink' },
+          { v: s.late, l: 'late', c: 'text-late' },
+          { v: s.warn, l: 'at risk', c: 'text-[#92400e]' },
+          { v: money(s.rent_lost_so_far), l: 'rent lost so far', c: 'text-ink' },
+        ].map((x) => (
+          <span key={x.l} className="rounded-btn border border-line bg-surface px-3 py-1.5">
+            <b className={`num font-semibold ${x.c}`}>{x.v}</b> <span className="text-body">{x.l}</span>
+          </span>
+        ))}
       </div>
 
       {moveError && <div className="mb-3"><ErrorBox error={new Error(moveError)} /></div>}

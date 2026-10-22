@@ -22,7 +22,7 @@ export default function AppInsights({ a, open: initialOpen = false }: { a: Appli
   return (
     <div className="mt-2">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-              className="inline-flex items-center gap-1 text-xs font-medium text-[#0f7898]">
+              className="inline-flex items-center gap-1 text-xs font-medium text-gold-ink">
         <Sparkles size={13} aria-hidden /> AI read this application
         <ChevronDown size={14} aria-hidden className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -33,7 +33,7 @@ export default function AppInsights({ a, open: initialOpen = false }: { a: Appli
             {fields.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-2 border-b border-line/60 py-1">
                 <dt className="text-muted">{k}</dt>
-                <dd className={v == null || v === '' ? 'text-[#b4252a]' : 'text-right text-heading'}>{v ?? 'missing'}</dd>
+                <dd className={v == null || v === '' ? 'text-late' : 'text-right text-heading'}>{v ?? 'missing'}</dd>
               </div>
             ))}
           </dl>
@@ -45,19 +45,19 @@ export default function AppInsights({ a, open: initialOpen = false }: { a: Appli
           <div className="grid gap-3 sm:grid-cols-2">
             {x.strengths?.length > 0 && (
               <div>
-                <p className="flex items-center gap-1 text-xs font-semibold text-[#1d7f55]"><CheckCircle2 size={13} aria-hidden /> Strengths</p>
+                <p className="flex items-center gap-1 text-xs font-semibold text-ok"><CheckCircle2 size={13} aria-hidden /> Strengths</p>
                 <ul className="mt-1 list-disc pl-4 text-xs text-heading">{x.strengths.map((s) => <li key={s}>{s}</li>)}</ul>
               </div>
             )}
             {x.follow_ups?.length > 0 && (
               <div>
-                <p className="flex items-center gap-1 text-xs font-semibold text-[#94600f]"><HelpCircle size={13} aria-hidden /> Ask before deciding</p>
+                <p className="flex items-center gap-1 text-xs font-semibold text-[#92400e]"><HelpCircle size={13} aria-hidden /> Ask before deciding</p>
                 <ul className="mt-1 list-disc pl-4 text-xs text-heading">{x.follow_ups.map((s) => <li key={s}>{s}</li>)}</ul>
               </div>
             )}
           </div>
           {x.missing_fields?.length > 0 && (
-            <p className="flex items-start gap-1 text-xs text-[#b4252a]">
+            <p className="flex items-start gap-1 text-xs text-late">
               <AlertCircle size={13} className="mt-0.5 shrink-0" aria-hidden /> Missing: {x.missing_fields.join(', ')}
             </p>
           )}

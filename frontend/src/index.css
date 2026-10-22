@@ -1,88 +1,126 @@
-/* TurnoverOS theme — based on the Skyledger/Fintechly site theme
-   (sky-blue accent, deep navy, Poppins, pill buttons, soft shadows). */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+/* TurnoverOS theme, matched to korealty.ca:
+   white pages, navy ink (#0F172A), gold accents (#EBAB39 / #D09A40),
+   deep indigo chrome (#090030), Manrope headings + Ropa Sans labels,
+   rectangular uppercase buttons. Gold is never used for small text on
+   white (too low contrast); links use a darker gold. */
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Ropa+Sans&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Ropa Sans", "Manrope", ui-sans-serif, sans-serif;
 
   /* Brand */
-  --color-accent: #48c7ec;        /* primary brand colour */
-  --color-accent-dark: #22a9d1;   /* hover / pressed */
-  --color-accent-soft: #e8f7fc;   /* tinted backgrounds */
-  --color-chart: #1594bb;         /* chart marks: accent darkened to pass 3:1 on white */
-  --color-navy: #092a48;          /* headings, top bar */
-  --color-navy-deep: #0d1d36;     /* sidebar / footer */
-  --color-navy-darkest: #031633;
+  --color-gold: #ebab39;          /* primary brand gold (fills, highlights) */
+  --color-gold-deep: #d09a40;     /* hover / borders */
+  --color-gold-ink: #8a6116;      /* gold for text & links on light (5.5:1) */
+  --color-gold-soft: #faf3e1;     /* tinted backgrounds */
+  --color-ink: #0f172a;           /* headings, primary text */
+  --color-indigo: #090030;        /* sidebar / dark chrome (site footer) */
+  --color-indigo-2: #14104a;      /* hover on dark chrome */
+
+  /* Legacy names kept so components read naturally */
+  --color-navy: #0f172a;
+  --color-navy-deep: #090030;
+  --color-navy-darkest: #05001f;
+  --color-accent: #d09a40;
+  --color-accent-dark: #b4822f;
+  --color-accent-soft: #faf3e1;
+  --color-link: #8a6116;
+
+  /* Data marks: deep blue, distinct from gold and from status colours */
+  --color-chart: #2e4485;
+  --color-chart-muted: #c9c3b4;
 
   /* Text */
-  --color-heading: #222222;
-  --color-body: #6a6a6a;
-  --color-muted: #999999;
+  --color-heading: #0f172a;
+  --color-body: #4a4a4a;
+  --color-muted: #6b6457;
 
   /* Surfaces */
   --color-surface: #ffffff;
-  --color-canvas: #f4f7fa;
-  --color-line: #dee0e1;
+  --color-canvas: #faf8f3;        /* warm off-white, from the site's cream */
+  --color-line: #e7e1d3;
+  --color-line-strong: #d6cdb8;
 
-  /* Status (stage health) */
-  --color-ok: #2fb67c;
-  --color-warn: #f2a93b;
-  --color-late: #e5484d;
+  /* Status (always paired with icon + label) */
+  --color-ok: #1f8a5b;
+  --color-warn: #d97706;
+  --color-late: #c62828;
 
-  --radius-card: 8px;
-  --radius-pill: 25px;
-  --shadow-card: 0 0 10px 0 rgba(64, 64, 64, 0.12);
-  --shadow-card-hover: 0 0 20px 0 rgba(64, 64, 64, 0.16);
+  --radius-card: 6px;
+  --radius-pill: 999px;
+  --radius-btn: 4px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 4px 14px rgba(15, 23, 42, 0.08);
 }
 
 @layer base {
   :root { color-scheme: only light; }
   body {
     @apply bg-canvas text-body font-sans antialiased;
+    font-feature-settings: "tnum" 0;
   }
   h1, h2, h3, h4 {
-    @apply text-navy font-semibold;
+    @apply text-ink font-semibold tracking-tight;
   }
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-gold-deep);
     outline-offset: 2px;
   }
+  ::selection { background: var(--color-gold-soft); color: var(--color-ink); }
+  * { scrollbar-width: thin; scrollbar-color: var(--color-line-strong) transparent; }
 }
 
 @layer components {
-  /* Theme's .btn-default: outlined pill that fills from the left on hover */
-  .btn {
-    @apply relative inline-flex items-center gap-2 overflow-hidden rounded-pill border-2 border-accent
-      px-5 py-2 text-sm font-semibold text-accent bg-surface transition-colors duration-300 z-0;
+  /* Small uppercase label, the site's Ropa Sans voice */
+  .eyebrow {
+    @apply font-label text-[13px] uppercase tracking-[0.12em] text-gold-ink;
   }
-  .btn::before {
-    content: "";
-    @apply absolute inset-0 -z-10 rounded-pill bg-accent transition-transform duration-300;
-    transform: translateX(-102%);
-  }
-  .btn:hover { @apply text-white; }
-  .btn:hover::before { transform: translateX(0); }
 
-  /* Solid variant for primary actions */
+  /* Primary: gold fill, ink text (8.9:1) */
   .btn-solid {
-    /* deeper than --accent so white text stays readable */
-    @apply inline-flex items-center gap-2 rounded-pill bg-chart px-5 py-2 text-sm font-semibold text-white
-      transition-colors duration-300 hover:bg-[#0f7898] disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-btn border border-gold-deep bg-gold px-4 py-2
+      font-label text-[15px] uppercase tracking-[0.06em] text-ink transition-colors duration-150
+      hover:bg-gold-deep disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  /* Secondary: gold outline, like the site's "I AM A ..." buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-btn border border-gold-deep bg-surface px-4 py-2
+      font-label text-[15px] uppercase tracking-[0.06em] text-gold-ink transition-colors duration-150
+      hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  /* Quiet: text-only action */
+  .btn-quiet {
+    @apply inline-flex items-center gap-1.5 rounded-btn px-2 py-1 text-sm font-medium text-gold-ink
+      hover:bg-gold-soft;
   }
 
   .card {
-    @apply relative rounded-card bg-surface shadow-card transition-shadow duration-300;
+    @apply relative rounded-card border border-line bg-surface shadow-card;
   }
-  .card:hover { @apply shadow-card-hover; }
+  .card-hover {
+    @apply transition-shadow duration-150 hover:shadow-card-hover;
+  }
 
-  /* Theme's .section-title: heading with a short accent underline */
+  /* Page title with a short gold rule, echoing the site's underlined headings */
   .section-title {
-    @apply relative pb-3 text-2xl font-semibold text-navy;
+    @apply relative pb-3 font-semibold text-ink;
   }
   .section-title::after {
     content: "";
-    @apply absolute bottom-0 left-0 h-0.5 w-16 bg-accent;
+    @apply absolute bottom-0 left-0 h-[3px] w-12 bg-gold;
+  }
+
+  .num { font-variant-numeric: tabular-nums; }
+
+  .input {
+    @apply w-full rounded-btn border border-line-strong bg-surface px-3 py-2 text-sm text-ink
+      placeholder:text-muted focus:border-gold-deep focus:outline-none focus:ring-2 focus:ring-gold/30;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-btn bg-[#efe9da];
   }
 }
 

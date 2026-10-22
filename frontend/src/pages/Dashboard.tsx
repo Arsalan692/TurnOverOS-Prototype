@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useTitle } from '../lib/title'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowRight, BellPlus, MessageSquareWarning } from 'lucide-react'
+import DemoGuide from '../components/DemoGuide'
 import { api } from '../lib/api'
 import { compactMoney, days, money } from '../lib/format'
 import { useCity, withCity } from '../lib/city'
@@ -9,6 +11,7 @@ import { CompareBars, StageBars, TrendChart } from '../components/charts'
 import SavingsCalculator from '../components/SavingsCalculator'
 
 export default function Dashboard() {
+  useTitle('Dashboard')
   const city = useCity()
   const { data: d, isLoading, error } = useQuery({ queryKey: ['dashboard', city], queryFn: () => api.dashboard(city) })
 
@@ -24,27 +27,37 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-card bg-navy-deep text-white shadow-card">
+      {/* Hero: KO Realty style, photo with indigo overlay, light headline, gold rule */}
+      <section className="relative overflow-hidden rounded-card bg-indigo text-white">
         <img src="/images/hero.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-right" />
-        <div className="absolute inset-0 bg-gradient-to-r from-navy-darkest/95 via-navy-darkest/75 to-navy-darkest/10" />
-        <div className="relative max-w-2xl p-6 md:p-10">
-          <p className="text-sm font-medium uppercase tracking-wider text-accent">Vacancy overview · {d.city}</p>
-          <h1 className="mt-3 text-3xl font-semibold leading-tight text-white md:text-4xl">
-            Every empty day costs owners rent.
-          </h1>
-          <p className="mt-4 text-[#d5dbe4] md:text-lg">
-            Units sit empty <b className="text-white">{days(k.avg_days_vacant_12m)}</b> on average between tenants.
-            That was <b className="text-white">{compactMoney(k.vacancy_cost_12m)}</b> of rent lost in the last 12 months.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to={withCity('/board', city)} className="btn-solid">Open turnover board <ArrowRight size={16} aria-hidden /></Link>
-            <Link to="/notice" className="inline-flex items-center gap-2 rounded-pill border-2 border-white/70 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-navy">
-              <BellPlus size={16} aria-hidden /> Log a notice
-            </Link>
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo via-indigo/85 to-indigo/20" />
+        <div className="relative grid gap-8 p-6 md:p-10 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="max-w-2xl">
+            <p className="font-label text-[14px] uppercase tracking-[0.16em] text-gold">Vacancy overview · {d.city}</p>
+            <h1 className="mt-3 text-[2rem] font-light leading-[1.1] tracking-tight text-white md:text-[2.75rem]">
+              Every empty day <span className="font-semibold text-gold">costs owners rent.</span>
+            </h1>
+            <div className="mt-4 h-[3px] w-16 bg-gold" />
+            <p className="mt-4 text-[#e6e1f0] md:text-lg">
+              Units sit empty <b className="font-semibold text-white">{days(k.avg_days_vacant_12m)}</b> on average between tenants:{' '}
+              <b className="font-semibold text-white">{compactMoney(k.vacancy_cost_12m)}</b> of rent lost in the last 12 months.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to={withCity('/board', city)} className="btn-solid">Open turnover board <ArrowRight size={16} aria-hidden /></Link>
+              <Link to="/notice" className="inline-flex items-center justify-center gap-2 rounded-btn border border-white/60 px-4 py-2 font-label text-[15px] uppercase tracking-[0.06em] text-white transition-colors hover:bg-white hover:text-ink">
+                <BellPlus size={16} aria-hidden /> Log a notice
+              </Link>
+            </div>
           </div>
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-white/15 bg-white/15 text-center backdrop-blur-sm lg:w-72">
+            <div className="bg-indigo/70 p-4"><dt className="font-label text-[12px] uppercase tracking-[0.12em] text-[#c8c4dc]">Pre-marketed</dt><dd className="num mt-1 text-2xl font-semibold text-gold">{days(pre.with?.avg_days_vacant)}</dd></div>
+            <div className="bg-indigo/70 p-4"><dt className="font-label text-[12px] uppercase tracking-[0.12em] text-[#c8c4dc]">Listed after</dt><dd className="num mt-1 text-2xl font-semibold text-white">{days(pre.without?.avg_days_vacant)}</dd></div>
+            <div className="col-span-2 bg-indigo/70 px-4 py-2.5 text-xs text-[#c8c4dc]">Average days vacant, last 12 months</div>
+          </dl>
         </div>
       </section>
+
+      <DemoGuide city={city} />
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -122,6 +135,7 @@ export default function Dashboard() {
         </Section>
       </div>
 
+      <div id="savings" className="scroll-mt-6" />
       <Section title="Savings calculator"
                subtitle="Cut days from any step and see what owners keep. Try the Autopilot result first.">
         <SavingsCalculator d={d} />

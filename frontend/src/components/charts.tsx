@@ -5,9 +5,9 @@ import {
 import type { Dashboard } from '../lib/api'
 import { compactMoney, days, monthLabel } from '../lib/format'
 
-const CHART = '#1594bb' // single-series mark colour (accent, darkened to pass 3:1)
-const GRID = '#e6e9ec'
-const INK2 = '#6a6a6a'
+const CHART = '#2e4485' // single-series mark colour (accent, darkened to pass 3:1)
+const GRID = '#ece6d8'
+const INK2 = '#6b6457'
 
 /** "Where the days go": one horizontal bar per vacant stage, with the target as a tick. */
 export function StageBars({ data }: { data: Dashboard['stage_breakdown'] }) {
@@ -28,7 +28,7 @@ export function StageBars({ data }: { data: Dashboard['stage_breakdown'] }) {
                 />
                 {/* target tick */}
                 <div
-                  className="absolute inset-y-0 w-0.5 bg-navy"
+                  className="absolute inset-y-0 w-0.5 bg-gold-ink"
                   style={{ left: `${(d.target_days / max) * 82}%` }}
                   aria-hidden
                 />
@@ -39,7 +39,7 @@ export function StageBars({ data }: { data: Dashboard['stage_breakdown'] }) {
                   {d.avg_days.toFixed(1)}
                 </span>
                 {/* hover tooltip */}
-                <div className="pointer-events-none absolute -top-9 left-0 z-10 hidden whitespace-nowrap rounded-card bg-navy-deep px-3 py-1.5 text-xs text-white shadow-card group-hover:block">
+                <div className="pointer-events-none absolute -top-9 left-0 z-10 hidden whitespace-nowrap rounded-btn bg-ink px-3 py-1.5 text-xs text-white shadow-card group-hover:block">
                   {d.label}: avg {days(d.avg_days)} · target {days(d.target_days, 0)}
                   {over > 0.05 ? ` · ${over.toFixed(1)} over` : ' · on target'}
                 </div>
@@ -53,7 +53,7 @@ export function StageBars({ data }: { data: Dashboard['stage_breakdown'] }) {
           <span className="inline-block h-2.5 w-4 rounded-sm" style={{ background: CHART }} /> Average days per turnover
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-0.5 bg-navy" /> Target
+          <span className="inline-block h-3 w-0.5 bg-gold-ink" /> Target
         </span>
         <span className="ml-auto font-medium text-heading">Total ≈ {days(total)}</span>
       </div>
@@ -65,7 +65,7 @@ function TrendTooltip({ active, payload }: { active?: boolean; payload?: { paylo
   if (!active || !payload?.length) return null
   const p = payload[0].payload
   return (
-    <div className="rounded-card bg-navy-deep px-3 py-2 text-xs text-white shadow-card">
+    <div className="rounded-btn bg-ink px-3 py-2 text-xs text-white shadow-card-hover">
       <p className="font-semibold">{monthLabel(p.month)}</p>
       <p>Avg days vacant: <b>{p.avg_days_vacant}</b></p>
       <p>Turnovers: {p.turnovers}</p>
@@ -80,7 +80,7 @@ export function TrendChart({ data }: { data: Dashboard['monthly_trend'] }) {
   return (
     <div>
       <div className="mb-2 flex justify-end">
-        <button type="button" className="text-xs font-medium text-[#0f7898] hover:underline" onClick={() => setTable((t) => !t)}>
+        <button type="button" className="text-xs font-medium text-gold-ink hover:underline" onClick={() => setTable((t) => !t)}>
           {table ? 'Show chart' : 'Show table'}
         </button>
       </div>
@@ -109,7 +109,7 @@ export function TrendChart({ data }: { data: Dashboard['monthly_trend'] }) {
                      axisLine={{ stroke: GRID }} tickLine={false} interval="preserveStartEnd" minTickGap={16} />
               <YAxis tick={{ fill: INK2, fontSize: 12 }} axisLine={false} tickLine={false}
                      domain={[0, 'auto']} allowDecimals={false} />
-              <Tooltip content={<TrendTooltip />} cursor={{ stroke: '#092a48', strokeWidth: 1, strokeDasharray: '3 3' }} />
+              <Tooltip content={<TrendTooltip />} cursor={{ stroke: '#0f172a', strokeWidth: 1, strokeDasharray: '3 3' }} />
               <Line type="monotone" dataKey="avg_days_vacant" stroke={CHART} strokeWidth={2}
                     dot={false} activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }} />
             </LineChart>
@@ -134,7 +134,7 @@ export function CompareBars({ items }: { items: { label: string; value: number; 
           </div>
           <div className="mt-1 h-2.5 rounded-r-[4px] bg-canvas">
             <div className="h-full rounded-r-[4px]"
-                 style={{ width: `${(i.value / max) * 100}%`, background: i.emphasis ? CHART : '#9fb3c4' }} />
+                 style={{ width: `${(i.value / max) * 100}%`, background: i.emphasis ? CHART : '#c9c3b4' }} />
           </div>
         </li>
       ))}

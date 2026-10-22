@@ -42,11 +42,11 @@ export default function ListingWriter({ t }: { t: TurnoverDetail }) {
   }
 
   return (
-    <div className="rounded-card border border-accent/40 bg-accent-soft/50 p-4">
+    <div className="rounded-card border border-gold-deep/40 bg-gold-soft/60 p-4">
       <div className="flex flex-wrap items-center gap-2">
         <label className="text-sm text-heading" htmlFor={`tone-${t.id}`}>Tone</label>
         <select id={`tone-${t.id}`} value={tone} onChange={(e) => setTone(e.target.value)}
-                className="rounded-pill border border-line bg-surface px-3 py-1.5 text-sm">
+                className="input w-auto! py-1.5!">
           {TONES.map((x) => <option key={x}>{x}</option>)}
         </select>
         <button type="button" className="btn-solid" disabled={write.isPending} onClick={() => write.mutate()}>
@@ -76,7 +76,7 @@ export default function ListingWriter({ t }: { t: TurnoverDetail }) {
           <label className="block text-sm">
             <span className="flex items-center justify-between font-medium text-heading">
               Rentfaster description
-              <button type="button" className="inline-flex items-center gap-1 text-xs text-[#0f7898]"
+              <button type="button" className="inline-flex items-center gap-1 text-xs text-gold-ink"
                       onClick={() => copy('desc', `${draft.title}\n\n${draft.description}`)}>
                 {copied === 'desc' ? <Check size={12} aria-hidden /> : <Copy size={12} aria-hidden />} Copy
               </button>
@@ -87,7 +87,7 @@ export default function ListingWriter({ t }: { t: TurnoverDetail }) {
           <label className="block text-sm">
             <span className="flex items-center justify-between font-medium text-heading">
               Facebook Marketplace post
-              <button type="button" className="inline-flex items-center gap-1 text-xs text-[#0f7898]"
+              <button type="button" className="inline-flex items-center gap-1 text-xs text-gold-ink"
                       onClick={() => copy('fb', draft.facebook_post)}>
                 {copied === 'fb' ? <Check size={12} aria-hidden /> : <Copy size={12} aria-hidden />} Copy
               </button>
@@ -98,7 +98,7 @@ export default function ListingWriter({ t }: { t: TurnoverDetail }) {
 
           {draft.highlights.length > 0 && (
             <ul className="flex flex-wrap gap-1.5">
-              {draft.highlights.map((h) => <li key={h} className="rounded-pill bg-surface px-2.5 py-1 text-xs text-heading">{h}</li>)}
+              {draft.highlights.map((h) => <li key={h} className="rounded-btn bg-surface px-2.5 py-1 text-xs text-heading">{h}</li>)}
             </ul>
           )}
           {draft.photo_notes.length > 0 && (
@@ -109,7 +109,7 @@ export default function ListingWriter({ t }: { t: TurnoverDetail }) {
               </ul>
             </div>
           )}
-          <p className="flex items-start gap-1.5 text-sm text-[#1d7f55]">
+          <p className="flex items-start gap-1.5 text-sm text-ok">
             <ShieldCheck size={16} className="mt-0.5 shrink-0" aria-hidden /> {draft.fair_housing_check}
           </p>
 

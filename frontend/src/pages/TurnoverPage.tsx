@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTitle } from '../lib/title'
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -10,7 +11,7 @@ import {
   CHANNEL_LABELS, TASK_LABELS, allInteriors, beds, days, money, shortDate,
 } from '../lib/format'
 import { useCity, withCity } from '../lib/city'
-import { AutopilotBadge, ErrorBox, HealthBadge, Loading, Section, StatTile } from '../components/ui'
+import { AutopilotBadge, ErrorBox, HealthBadge, InlineLoading, Loading, Section, StatTile, Tag } from '../components/ui'
 import ListingWriter from '../components/ai/ListingWriter'
 import ApplicationReader from '../components/ai/ApplicationReader'
 import RenterChat from '../components/ai/RenterChat'
@@ -48,9 +49,9 @@ function Stepper({ t }: { t: TurnoverDetail }) {
         const skipped = i < current && !visited.has(s.key)
         return (
           <li key={s.key} className="min-w-[4.75rem] flex-1" aria-current={isCurrent ? 'step' : undefined}>
-            <div className={`h-1.5 rounded-pill ${skipped ? 'bg-line' : done ? 'bg-chart' : isCurrent ? 'bg-accent' : 'bg-line'}`} />
+            <div className={`h-1.5 rounded-btn ${skipped ? 'bg-line' : done ? 'bg-ink' : isCurrent ? 'bg-gold' : 'bg-line'}`} />
             <p className={`mt-1.5 flex items-center gap-1 text-xs ${isCurrent ? 'font-semibold text-navy' : skipped ? 'text-muted line-through' : done ? 'text-heading' : 'text-muted'}`}>
-              {done && !skipped ? <Check size={12} aria-hidden /> : isCurrent ? <Circle size={10} className="fill-accent text-accent" aria-hidden /> : null}
+              {done && !skipped ? <Check size={12} aria-hidden /> : isCurrent ? <Circle size={10} className="fill-gold text-gold-deep" aria-hidden /> : null}
               {s.label}
             </p>
           </li>
@@ -72,11 +73,11 @@ function PricePanel({ id, active }: { id: number; active: boolean }) {
     },
   })
   if (!active) return null
-  if (isLoading || !p) return <Section title="Price suggestion"><Loading label="Checking comparables…" /></Section>
+  if (isLoading || !p) return <Section title="Price suggestion"><InlineLoading label="Checking comparables" /></Section>
 
   const tone = {
-    lower: 'border-warn bg-warn/10', raise: 'border-ok bg-ok/10', refresh_listing: 'border-warn bg-warn/10',
-    watch: 'border-accent bg-accent-soft', hold: 'border-ok bg-ok/10',
+    lower: 'border-warn bg-warn/8', raise: 'border-ok bg-ok/8', refresh_listing: 'border-warn bg-warn/8',
+    watch: 'border-gold-deep bg-gold-soft', hold: 'border-ok bg-ok/10',
   }[p.action]
   const title = {
     lower: 'Lower the rent', raise: 'Room to raise', refresh_listing: 'Refresh the listing',
@@ -118,6 +119,7 @@ export default function TurnoverPage() {
   const city = useCity()
   const qc = useQueryClient()
   const { data: t, isLoading, error } = useQuery({ queryKey: ['turnover', id], queryFn: () => api.turnover(id) })
+  useTitle(t ? t.unit.label : 'Turnover')
 
   const refresh = (next: TurnoverDetail) => {
     qc.setQueryData(['turnover', id], next)
@@ -142,26 +144,26 @@ export default function TurnoverPage() {
 
   return (
     <div className="space-y-6">
-      <Link to={withCity('/board', city)} className="inline-flex items-center gap-1 text-sm font-medium text-[#0f7898] hover:underline">
+      <Link to={withCity('/board', city)} className="inline-flex items-center gap-1 text-sm font-medium text-gold-ink hover:underline">
         <ArrowLeft size={16} aria-hidden /> Back to board
       </Link>
 
       {/* Header */}
       <section className="card overflow-hidden md:flex">
-        <img src={u.photo} alt={`${u.property_name} exterior`} className="h-48 w-full object-cover md:h-auto md:w-80" />
+        <img src={u.photo} alt={`${u.property_name} exterior`} className="h-48 w-full object-cover md:h-auto md:w-80 md:border-r md:border-line" />
         <div className="flex-1 p-5 md:p-6">
           <div className="flex flex-wrap items-center gap-2">
             <HealthBadge health={t.health} />
             {t.autopilot && <AutopilotBadge />}
-            {t.pre_marketed && !t.autopilot && <span className="rounded-pill bg-accent-soft px-2 py-0.5 text-xs font-medium text-[#0f7898]">Pre-marketed</span>}
-            <span className="rounded-pill bg-canvas px-2 py-0.5 text-xs font-medium text-body">{done ? 'Completed' : t.stage_label}</span>
+            {t.pre_marketed && !t.autopilot && <Tag tone="gold">Pre-marketed</Tag>}
+            <Tag>{done ? 'Completed' : t.stage_label}</Tag>
           </div>
           <h1 className="mt-3 text-2xl font-semibold text-navy md:text-3xl">{u.label}</h1>
           <p className="text-body">{u.address} · {u.neighbourhood}</p>
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-heading">
-            <span className="inline-flex items-center gap-1.5"><BedDouble size={16} aria-hidden className="text-chart" />{beds(u.bedrooms)}</span>
-            <span className="inline-flex items-center gap-1.5"><Bath size={16} aria-hidden className="text-chart" />{u.bathrooms} bath</span>
-            <span className="inline-flex items-center gap-1.5"><Ruler size={16} aria-hidden className="text-chart" />{u.sqft} sq ft</span>
+            <span className="inline-flex items-center gap-1.5"><BedDouble size={16} aria-hidden className="text-gold-deep" />{beds(u.bedrooms)}</span>
+            <span className="inline-flex items-center gap-1.5"><Bath size={16} aria-hidden className="text-gold-deep" />{u.bathrooms} bath</span>
+            <span className="inline-flex items-center gap-1.5"><Ruler size={16} aria-hidden className="text-gold-deep" />{u.sqft} sq ft</span>
             <span>Market {money(u.market_rent)}</span>
           </div>
           <div className="mt-5"><Stepper t={t} /></div>
@@ -211,7 +213,7 @@ export default function TurnoverPage() {
                   <li key={i} className="grid grid-cols-[7rem_1fr_auto] items-center gap-3 text-sm sm:grid-cols-[9rem_1fr_auto]">
                     <span className="text-heading">{e.label}</span>
                     <span className="text-xs text-body tabular-nums">{shortDate(e.entered_at)} → {e.exited_at ? shortDate(e.exited_at) : 'now'}</span>
-                    <span className={`tabular-nums font-medium ${over ? 'text-[#b4252a]' : 'text-heading'}`}>
+                    <span className={`tabular-nums font-medium ${over ? 'text-late' : 'text-heading'}`}>
                       {e.days}d{over && <span className="sr-only"> (over target)</span>}
                     </span>
                   </li>
@@ -237,7 +239,7 @@ export default function TurnoverPage() {
                       )}
                     </div>
                     <div className="text-right">
-                      <p className={`text-xs font-medium ${k.status === 'done' ? 'text-[#1d7f55]' : 'text-body'}`}>
+                      <p className={`text-xs font-medium ${k.status === 'done' ? 'text-ok' : 'text-body'}`}>
                         {k.status === 'done' ? `Done ${shortDate(k.completed_at)}` : `Scheduled ${shortDate(k.scheduled_for)}`}
                       </p>
                       {k.cost != null && k.cost > 0 && <p className="text-xs text-muted tabular-nums">{money(k.cost)}</p>}
@@ -253,13 +255,13 @@ export default function TurnoverPage() {
             {t.applications.length === 0 ? <p className="text-sm text-body">No applications yet.</p> : (
               <ul className="divide-y divide-line">
                 {t.applications.map((a) => (
-                  <li key={a.id} className={`py-3 text-sm ${a.id === newAppId ? 'rounded-card bg-accent-soft/60 px-3' : ''}`}>
+                  <li key={a.id} className={`py-3 text-sm ${a.id === newAppId ? 'rounded-card bg-gold-soft/70 px-3' : ''}`}>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-heading">{a.applicant_name}</p>
                       <p className="text-xs text-body">
                         {a.employer ?? 'Employer not given'} · {money(a.monthly_income)}/mo
-                        {a.income_to_rent != null && <> · <b className={a.income_to_rent >= 3 ? 'text-[#1d7f55]' : 'text-[#94600f]'}>{a.income_to_rent}× rent</b></>}
+                        {a.income_to_rent != null && <> · <b className={a.income_to_rent >= 3 ? 'text-ok' : 'text-[#92400e]'}>{a.income_to_rent}× rent</b></>}
                         {a.has_pets ? ' · has pets' : ''}
                       </p>
                     </div>
@@ -275,8 +277,8 @@ export default function TurnoverPage() {
                         </button>
                       </div>
                     ) : (
-                      <span className={`rounded-pill px-2 py-0.5 text-xs font-medium ${
-                        a.status === 'approved' ? 'bg-ok/10 text-[#1d7f55]' : 'bg-canvas text-body'}`}>
+                      <span className={`rounded-btn px-2 py-0.5 text-xs font-medium ${
+                        a.status === 'approved' ? 'bg-ok/10 text-ok' : 'bg-canvas text-body'}`}>
                         {a.status[0].toUpperCase() + a.status.slice(1)}
                       </span>
                     )}
@@ -305,7 +307,7 @@ export default function TurnoverPage() {
                   <li key={l.id} className="rounded-card border border-line p-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-semibold text-navy">{CHANNEL_LABELS[l.channel] ?? l.channel}</span>
-                      <span className={`rounded-pill px-2 py-0.5 text-xs font-medium ${l.status === 'live' ? 'bg-ok/10 text-[#1d7f55]' : 'bg-canvas text-body'}`}>
+                      <span className={`rounded-btn px-2 py-0.5 text-xs font-medium ${l.status === 'live' ? 'bg-ok/10 text-ok' : 'bg-canvas text-body'}`}>
                         {l.status === 'live' ? 'Live' : 'Closed'}
                       </span>
                     </div>
@@ -320,7 +322,7 @@ export default function TurnoverPage() {
             )}
             {!done && (
               <div className="mt-4">
-                <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-heading"><Sparkles size={15} aria-hidden className="text-chart" /> AI listing writer</p>
+                <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-heading"><Sparkles size={15} aria-hidden className="text-gold-deep" /> AI listing writer</p>
                 <ListingWriter t={t} />
               </div>
             )}
@@ -339,7 +341,7 @@ export default function TurnoverPage() {
               <div className="flex justify-between gap-3"><dt className="text-muted">Built</dt><dd className="text-heading">{u.year_built}</dd></div>
             </dl>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {u.amenities.map((a) => <span key={a} className="rounded-pill bg-canvas px-2 py-0.5 text-xs text-body">{a}</span>)}
+              {u.amenities.map((a) => <Tag key={a}>{a}</Tag>)}
             </div>
             <p className="mt-3 text-xs text-muted">Interior photos are shared demo images.</p>
           </Section>

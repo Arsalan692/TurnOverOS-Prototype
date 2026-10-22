@@ -18,9 +18,12 @@ type Msg = ChatTurn & { meta?: BotReply & { secs: number } }
 export default function RenterChat({ t }: { t: TurnoverDetail }) {
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [text, setText] = useState('')
-  const end = useRef<HTMLDivElement>(null)
+  const box = useRef<HTMLDivElement>(null)
 
-  useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }) }, [msgs])
+  // Keep the newest message visible by scrolling the chat box only, never the page
+  useEffect(() => {
+    if (msgs.length && box.current) box.current.scrollTop = box.current.scrollHeight
+  }, [msgs])
 
   const send = useMutation({
     mutationFn: async (message: string) => {
@@ -41,30 +44,30 @@ export default function RenterChat({ t }: { t: TurnoverDetail }) {
 
   return (
     <div>
-      <div className="max-h-96 min-h-40 space-y-3 overflow-y-auto rounded-card bg-canvas p-3" aria-live="polite">
+      <div ref={box} className="max-h-96 min-h-40 space-y-3 overflow-y-auto rounded-card bg-canvas p-3" aria-live="polite">
         {msgs.length === 0 && (
           <p className="py-6 text-center text-sm text-body">You are the renter. Ask anything about this listing.</p>
         )}
         {msgs.map((m, i) => (
           <div key={i} className={`flex gap-2 ${m.role === 'renter' ? 'flex-row-reverse' : ''}`}>
             <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-              m.role === 'renter' ? 'bg-navy text-white' : 'bg-chart text-white'}`}>
+              m.role === 'renter' ? 'bg-ink text-white' : 'bg-gold text-ink'}`}>
               {m.role === 'renter' ? <UserRound size={15} aria-hidden /> : <Bot size={15} aria-hidden />}
             </span>
             <div className={`max-w-[85%] rounded-card px-3 py-2 text-sm ${
-              m.role === 'renter' ? 'bg-navy text-white' : 'bg-surface text-heading shadow-card'}`}>
+              m.role === 'renter' ? 'bg-ink text-white' : 'border border-line bg-surface text-heading'}`}>
               <p className="whitespace-pre-line">{m.text}</p>
               {m.meta && (
                 <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                  <span className="rounded-pill bg-canvas px-2 py-0.5 text-body">replied in {m.meta.secs.toFixed(1)}s</span>
-                  <span className="rounded-pill bg-canvas px-2 py-0.5 text-body">{m.meta.intent.replace('_', ' ')}</span>
+                  <span className="rounded-btn bg-canvas px-2 py-0.5 text-body">replied in {m.meta.secs.toFixed(1)}s</span>
+                  <span className="rounded-btn bg-canvas px-2 py-0.5 text-body">{m.meta.intent.replace('_', ' ')}</span>
                   {m.meta.needs_human && (
-                    <span className="inline-flex items-center gap-1 rounded-pill bg-warn/15 px-2 py-0.5 text-[#94600f]">
+                    <span className="inline-flex items-center gap-1 rounded-btn bg-warn/15 px-2 py-0.5 text-[#92400e]">
                       <UserRoundCog size={12} aria-hidden /> sent to team{m.meta.handoff_reason ? `: ${m.meta.handoff_reason}` : ''}
                     </span>
                   )}
                   {m.meta.suggested_slots.map((s) => (
-                    <span key={s} className="inline-flex items-center gap-1 rounded-pill bg-accent-soft px-2 py-0.5 text-[#0f7898]">
+                    <span key={s} className="inline-flex items-center gap-1 rounded-btn bg-accent-soft px-2 py-0.5 text-gold-ink">
                       <CalendarClock size={12} aria-hidden /> {s}
                     </span>
                   ))}
@@ -74,13 +77,12 @@ export default function RenterChat({ t }: { t: TurnoverDetail }) {
           </div>
         ))}
         {send.isPending && <p className="pl-9 text-sm text-muted">Typing…</p>}
-        <div ref={end} />
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {QUICK.map((q) => (
           <button key={q} type="button" onClick={() => submit(q)} disabled={send.isPending}
-                  className="rounded-pill border border-line bg-surface px-2.5 py-1 text-xs text-heading hover:border-accent">
+                  className="rounded-btn border border-line bg-surface px-2.5 py-1 text-xs text-heading hover:border-gold-deep hover:bg-gold-soft">
             {q}
           </button>
         ))}
@@ -89,7 +91,7 @@ export default function RenterChat({ t }: { t: TurnoverDetail }) {
         <label className="sr-only" htmlFor={`chat-${t.id}`}>Message as renter</label>
         <input id={`chat-${t.id}`} value={text} onChange={(e) => setText(e.target.value)} maxLength={1000}
                placeholder="Type as the renter…"
-               className="min-w-0 flex-1 rounded-pill border border-line bg-surface px-4 py-2 text-sm focus:border-accent" />
+               className="input min-w-0 flex-1" />
         <button type="submit" className="btn-solid" disabled={send.isPending || !text.trim()} aria-label="Send">
           <Send size={16} aria-hidden />
         </button>
