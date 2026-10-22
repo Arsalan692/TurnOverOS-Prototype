@@ -1,0 +1,88 @@
+/* TurnoverOS theme — based on the Skyledger/Fintechly site theme
+   (sky-blue accent, deep navy, Poppins, pill buttons, soft shadows). */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand */
+  --color-accent: #48c7ec;        /* primary brand colour */
+  --color-accent-dark: #22a9d1;   /* hover / pressed */
+  --color-accent-soft: #e8f7fc;   /* tinted backgrounds */
+  --color-navy: #092a48;          /* headings, top bar */
+  --color-navy-deep: #0d1d36;     /* sidebar / footer */
+  --color-navy-darkest: #031633;
+
+  /* Text */
+  --color-heading: #222222;
+  --color-body: #6a6a6a;
+  --color-muted: #999999;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-canvas: #f4f7fa;
+  --color-line: #dee0e1;
+
+  /* Status (stage health) */
+  --color-ok: #2fb67c;
+  --color-warn: #f2a93b;
+  --color-late: #e5484d;
+
+  --radius-card: 8px;
+  --radius-pill: 25px;
+  --shadow-card: 0 0 10px 0 rgba(64, 64, 64, 0.12);
+  --shadow-card-hover: 0 0 20px 0 rgba(64, 64, 64, 0.16);
+}
+
+@layer base {
+  body {
+    @apply bg-canvas text-body font-sans antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply text-navy font-semibold;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Theme's .btn-default: outlined pill that fills from the left on hover */
+  .btn {
+    @apply relative inline-flex items-center gap-2 overflow-hidden rounded-pill border-2 border-accent
+      px-5 py-2 text-sm font-semibold text-accent bg-surface transition-colors duration-300 z-0;
+  }
+  .btn::before {
+    content: "";
+    @apply absolute inset-0 -z-10 rounded-pill bg-accent transition-transform duration-300;
+    transform: translateX(-102%);
+  }
+  .btn:hover { @apply text-white; }
+  .btn:hover::before { transform: translateX(0); }
+
+  /* Solid variant for primary actions */
+  .btn-solid {
+    @apply inline-flex items-center gap-2 rounded-pill bg-accent px-5 py-2 text-sm font-semibold text-white
+      transition-colors duration-300 hover:bg-accent-dark;
+  }
+
+  .card {
+    @apply rounded-card bg-surface shadow-card transition-shadow duration-300;
+  }
+  .card:hover { @apply shadow-card-hover; }
+
+  /* Theme's .section-title: heading with a short accent underline */
+  .section-title {
+    @apply relative pb-3 text-2xl font-semibold text-navy;
+  }
+  .section-title::after {
+    content: "";
+    @apply absolute bottom-0 left-0 h-0.5 w-16 bg-accent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    container_name: turnoveros-db
+    environment:
+      POSTGRES_USER: turnover
+      POSTGRES_PASSWORD: turnover
+      POSTGRES_DB: turnoveros
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
