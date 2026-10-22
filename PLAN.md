@@ -75,7 +75,7 @@ Built-in story: "before" vs "after pre-marketing" to show the impact.
 | Database | **PostgreSQL** (Docker locally, Neon free tier online) |
 | Frontend | **React** + Vite + TypeScript, Tailwind CSS, Recharts (charts), drag-and-drop for board |
 | AI | **Gemini API** via `google-genai` SDK (gemini-3.5-flash → 2.5-flash fallback), structured JSON output |
-| Hosting | Frontend → Vercel, Backend → Render (or Railway), DB → Neon |
+| Hosting | Frontend → Vercel, Backend → Vercel (serverless Python), DB → Neon (all free, no card) |
 | Code | GitHub repo (public), README with screenshots |
 
 ## 4. Data model (Yardi-style core, built from scratch)
@@ -107,7 +107,7 @@ Each phase ends with a **simple explanation to you** of what was built.
 | **3. Frontend core** | Turnover Board (drag & drop), Unit detail, Log Notice (autopilot), Dashboard, savings calculator | Usable app |
 | **4. AI features** | Gemini listing writer + application reader + lead reply bot (needs your API key) | AI working end-to-end |
 | **5. Polish** ✅ | KO Realty brand theme (gold/indigo, Manrope + Ropa Sans), 3-minute demo tour, skeleton loading, page titles, code splitting, error screen, README screenshots | Looks professional |
-| **6. Deploy** | Neon + Render + Vercel, live link | Public URL |
+| **6. Deploy** ✅ | Neon + Vercel (web + API), no card. Live: turn-over-os-prototype-vk8j.vercel.app | Public URL |
 | **7. Submission** | 2-min demo video script, Q1 answer (<300 words), Q2 answer, bot section, final email draft | Ready to send |
 
 ### Rough timeline

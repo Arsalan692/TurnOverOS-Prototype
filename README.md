@@ -6,6 +6,8 @@ running ~800 rental units in Calgary and Edmonton.
 It tracks every unit from *"tenant gave notice"* to *"new tenant moved in"*,
 shows where days are lost, and automates the slow steps.
 
+**Live demo:** https://turn-over-os-prototype-vk8j.vercel.app
+
 > Prototype built for KO Realty with fake demo data. See [PLAN.md](PLAN.md).
 
 | Dashboard | Turnover board | Unit |
